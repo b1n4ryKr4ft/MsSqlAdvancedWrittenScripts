@@ -1,36 +1,33 @@
-DECLARE @storedProcsDumpTBL TABLE([SP_DUMP_TEXT] nVARCHAR(500))
-DECLARE @firstValue AS VARCHAR(20)
-DECLARE @prefix AS VARCHAR(20)
-DECLARE @storedProcFullName AS VARCHAR(100)
-DECLARE @storedProcNameTBL AS VARCHAR(100)
+-- DECLARE @storedProcsDumpTBL TABLE([SP_DUMP_TEXT] nVARCHAR(500))
+-- DECLARE @firstValue AS VARCHAR(20)
+-- DECLARE @prefix AS VARCHAR(20)
+-- DECLARE @storedProcFullName AS VARCHAR(100)
+-- DECLARE @storedProcNameTBL AS VARCHAR(100)
 
-DECLARE hammerCursor CURSOR FOR
-SELECT name FROM sys.procedures
-ORDER BY 1
+-- DECLARE hammerCursor CURSOR FOR
+-- SELECT name FROM sys.procedures
+-- ORDER BY 1
 
-OPEN hammerCursor
+-- OPEN hammerCursor
 
-FETCH NEXT FROM hammerCursor INTO @storedProcNameTBL
-WHILE @@FETCH_STATUS = 0
-BEGIN
+-- FETCH NEXT FROM hammerCursor INTO @storedProcNameTBL
+-- WHILE @@FETCH_STATUS = 0
+-- BEGIN
+--     EXEC xp_sprintf @storedProcFullName OUTPUT, N'dbo.%s',@storedProcNameTBL
 
-    -- PRINT(@storedProcNameTBL)
-    -- SET @firstValue = SUBSTRING(@storedProcNameTBL, 0, CHARINDEX('_', @storedProcNameTBL))
+--     INSERT INTO @storedProcsDumpTBL([SP_DUMP_TEXT]) 
+--     EXEC sp_helptext @storedProcFullName
 
-    -- IF(isnumeric(@firstValue) = 1)
-    --     SET @prefix = 'rpt'
-    -- ELSE
-    --     SET @prefix ='dbo'
+--     FETCH NEXT FROM hammerCursor INTO @storedProcNameTBL
+-- END
 
-    EXEC xp_sprintf @storedProcFullName OUTPUT, N'dbo.%s',@storedProcNameTBL
+-- CLOSE hammerCursor
+-- DEALLOCATE hammerCursor
 
-    INSERT INTO @storedProcsDumpTBL([SP_DUMP_TEXT]) 
-    EXEC sp_helptext @storedProcFullName
+-- SELECT * FROM @storedProcsDumpTBL
 
-    FETCH NEXT FROM hammerCursor INTO @storedProcNameTBL
-END
+-- Compact version, straight to the point
+-- ======================================
 
-CLOSE hammerCursor
-DEALLOCATE hammerCursor
-
-SELECT * FROM @storedProcsDumpTBL
+SELECT object_definition(object_id) ddl
+FROM sys.procedures
